@@ -8,9 +8,11 @@ using MediatR;
 namespace Evently.Modules.Ticketing.Application.Orders.CreateOrder;
 
 internal sealed class CreateTicketsDomainEventHandler(ISender sender)
-    : IDomainEventHandler<OrderCreatedDomainEvent>
+    : DomainEventHandler<OrderCreatedDomainEvent>
 {
-    public async Task Handle(OrderCreatedDomainEvent notification, CancellationToken cancellationToken)
+    public override async Task Handle(
+        OrderCreatedDomainEvent notification,
+        CancellationToken cancellationToken = default)
     {
         Result result = await sender.Send(new CreateTicketBatchCommand(notification.OrderId), cancellationToken);
 
