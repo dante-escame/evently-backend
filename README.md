@@ -1,4 +1,34 @@
-# Evently
+> "Choose microservices for the benefits, not because your monolithic codebase is a mess."
+> — Simon Brown
+
+> "You shouldn't start a new project with microservices, even if you're sure your application will be big enough to make it worthwhile."
+> — Martin Fowler
+
+## Fallacies of Distributed Computing
+- The network is not reliable.
+- Latency is not zero.
+- Bandwidth is not infinite.
+- The network is not secure.
+- Topology does indeed change.
+- There is more than one administrator.
+- Transport cost is not zero.
+- The network is not homogeneous.
+
+By starting with a monolith, it turns out to be easier to define application boundaries.
+Microservices with poor boundaries elevate the cost of maintenance and new features. The mess will always get bigger.
+
+What is the solution then?
+
+With the physical architecture of a monolith and the logical architecture of microservices, we can merge the benefits of each approach.
+
+---
+
+# Modular Monolith
+A software design approach in which a monolith is designed with an emphasis on interchangeable (and potentially reusable) modules.
+Modules are separate parts that when combined form a complete whole.
+In this architecture, modules should be treated as self-contained, separated applications (even if they are in the same GIT repository).
+
+> "I personally don't like the name 'Modular Monolith' because of the stigma built in the development market about Monolithic Architectures, mainly around the distributed computing enjoyers. This architecture approach is great for starting up projects."
 
 A modular monolith backend for event management, built to explore and apply patterns specific to this architectural style.
 
