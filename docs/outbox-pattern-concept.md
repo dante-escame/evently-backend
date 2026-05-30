@@ -1,6 +1,6 @@
-# Outbox Pattern — Domain Events
+# Outbox Pattern: Domain Events
 
-> **At Least Once Delivery:** A guarantee that a Domain Event will be delivered to its handlers *at least one time* — meaning, even if processing fails mid-way, the event will be retried until it succeeds.
+> **At Least Once Delivery:** A guarantee that a Domain Event will be delivered to its handlers *at least one time*, meaning that even if processing fails mid-way, the event will be retried until it succeeds.
 
 -> Avoiding silent event loss when publishing Domain Events.
 
@@ -50,7 +50,7 @@ This atomicity is the core guarantee: you either get both the state change and t
 
 ## Where is this implemented in code?
 
-### 1. Raising Domain Events — `Entity`
+### 1. Raising Domain Events: `Entity`
 
 `src/Common/Evently.Common.Domain/Entity.cs`
 
@@ -70,11 +70,11 @@ public abstract class Entity
 }
 ```
 
-Aggregates call `Raise(new SomeDomainEvent(...))` inside their domain logic. Events live in memory until `SaveChanges` is called — that is when the interceptor picks them up.
+Aggregates call `Raise(new SomeDomainEvent(...))` inside their domain logic. Events live in memory until `SaveChanges` is called; that is when the interceptor picks them up.
 
 ---
 
-### 2. Persisting Atomically — `InsertOutboxMessagesInterceptor`
+### 2. Persisting Atomically: `InsertOutboxMessagesInterceptor`
 
 `src/Common/Evently.Common.Infrastructure/Outbox/InsertOutboxMessagesInterceptor.cs`
 
@@ -118,7 +118,7 @@ public sealed class InsertOutboxMessagesInterceptor : SaveChangesInterceptor
 }
 ```
 
-This EF Core interceptor hooks into `SavingChangesAsync` — **before** the `INSERT`/`UPDATE` for the aggregate hits the database. It walks the change tracker, drains the in-memory domain events from every tracked `Entity`, serialises them as `OutboxMessage` rows, and adds them to the same `DbContext`. Everything then commits in one atomic transaction.
+This EF Core interceptor hooks into `SavingChangesAsync`, **before** the `INSERT`/`UPDATE` for the aggregate hits the database. It walks the change tracker, drains the in-memory domain events from every tracked `Entity`, serialises them as `OutboxMessage` rows, and adds them to the same `DbContext`. Everything then commits in one atomic transaction.
 
 ---
 
@@ -142,7 +142,7 @@ public sealed class OutboxMessage
 
 ---
 
-### 4. Dispatching — `ProcessOutboxJob`
+### 4. Dispatching: `ProcessOutboxJob`
 
 `src/Modules/Events/Evently.Modules.Events.Infrastructure/Outbox/ProcessOutboxJob.cs`
 
@@ -183,7 +183,7 @@ internal sealed class ProcessOutboxJob(...) : IJob
 
 ---
 
-### 5. De-duplication — `IdempotentDomainEventHandler`
+### 5. De-duplication: `IdempotentDomainEventHandler`
 
 `src/Modules/Events/Evently.Modules.Events.Infrastructure/Outbox/IdempotentDomainEventHandler.cs`
 
@@ -214,7 +214,7 @@ internal sealed class IdempotentDomainEventHandler<TDomainEvent>(
 }
 ```
 
-This is the **Decorator Pattern** applied to `IDomainEventHandler`. Before delegating to the real handler, it checks `outbox_message_consumers`. The composite key `(OutboxMessageId, HandlerName)` means each handler is tracked independently — if Handler A fails but Handler B succeeds, only Handler A is retried on the next job run.
+This is the **Decorator Pattern** applied to `IDomainEventHandler`. Before delegating to the real handler, it checks `outbox_message_consumers`. The composite key `(OutboxMessageId, HandlerName)` means each handler is tracked independently: if Handler A fails but Handler B succeeds, only Handler A is retried on the next job run.
 
 ---
 
@@ -230,11 +230,11 @@ public sealed class OutboxMessageConsumer(Guid outboxMessageId, string name)
 }
 ```
 
-The composite primary key `(OutboxMessageId, Name)` is the idempotency token. Once a row exists for a given `(eventId, handlerName)` pair, that handler will never execute again for that event — regardless of how many times the job retries the message.
+The composite primary key `(OutboxMessageId, Name)` is the idempotency token. Once a row exists for a given `(eventId, handlerName)` pair, that handler will never execute again for that event, regardless of how many times the job retries the message.
 
 ---
 
-## Outbox vs. Inbox — Side by Side
+## Outbox vs. Inbox: Side by Side
 
 | Concern | Outbox Pattern | Inbox Pattern |
 |---|---|---|

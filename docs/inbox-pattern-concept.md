@@ -1,6 +1,6 @@
-# Inbox Pattern — Idempotency
+# Inbox Pattern: Idempotency
 
-> **At Least Once Processing:** A guarantee that an Integration Event will be processed by a consumer *at least one time* — meaning, in the face of failures and retries, the same message may arrive more than once.
+> **At Least Once Processing:** A guarantee that an Integration Event will be processed by a consumer *at least one time*, meaning that in the face of failures and retries, the same message may arrive more than once.
 
 -> Avoiding duplicate side effects on the receiving end.
 
@@ -25,7 +25,7 @@ flowchart LR
 
 If **Module A** publishes the same message more than once (e.g., due to a retry after a failure), **Module B**, **C**, and **D** may each receive it multiple times.
 
-What we really want is for each consumer module to process a given Integration Event **exactly once** — regardless of how many times the message arrives.
+What we really want is for each consumer module to process a given Integration Event **exactly once**, regardless of how many times the message arrives.
 
 ---
 
@@ -65,7 +65,7 @@ public sealed class InboxMessage
 
 ---
 
-### 2. Receiving from the Bus — `IntegrationEventConsumer`
+### 2. Receiving from the Bus: `IntegrationEventConsumer`
 
 `src/Modules/Users/Evently.Modules.Users.Infrastructure/Inbox/IntegrationEventConsumer.cs`
 
@@ -99,11 +99,11 @@ internal sealed class IntegrationEventConsumer<TIntegrationEvent>(IDbConnectionF
 }
 ```
 
-The MassTransit consumer does **no business logic at all** — it only persists the incoming event. The bus can retry the delivery; the database `Id` primary key prevents the same message from being inserted twice.
+The MassTransit consumer does **no business logic at all**; it only persists the incoming event. The bus can retry the delivery; the database `Id` primary key prevents the same message from being inserted twice.
 
 ---
 
-### 3. Processing — `ProcessInboxJob`
+### 3. Processing: `ProcessInboxJob`
 
 `src/Modules/Users/Evently.Modules.Users.Infrastructure/Inbox/ProcessInboxJob.cs`
 
@@ -141,7 +141,7 @@ internal sealed class ProcessInboxJob(...) : IJob
 
 ---
 
-### 4. De-duplication — `IdempotentIntegrationEventHandler`
+### 4. De-duplication: `IdempotentIntegrationEventHandler`
 
 `src/Modules/Users/Evently.Modules.Users.Infrastructure/Inbox/IdempotentIntegrationEventHandler.cs`
 
@@ -174,7 +174,7 @@ internal sealed class IdempotentIntegrationEventHandler<TIntegrationEvent>(
 }
 ```
 
-This is the **Decorator Pattern** applied to `IIntegrationEventHandler`. It wraps the real handler and checks `inbox_message_consumers` before letting the inner logic run. The composite key `(InboxMessageId, HandlerName)` means each handler is tracked independently — if Handler A fails but Handler B succeeds, only Handler A is retried.
+This is the **Decorator Pattern** applied to `IIntegrationEventHandler`. It wraps the real handler and checks `inbox_message_consumers` before letting the inner logic run. The composite key `(InboxMessageId, HandlerName)` means each handler is tracked independently: if Handler A fails but Handler B succeeds, only Handler A is retried.
 
 ---
 
@@ -194,7 +194,7 @@ The composite primary key `(InboxMessageId, Name)` is the idempotency token. Onc
 
 ---
 
-## Inbox vs. Outbox — Side by Side
+## Inbox vs. Outbox: Side by Side
 
 | Concern | Outbox Pattern | Inbox Pattern |
 |---|---|---|

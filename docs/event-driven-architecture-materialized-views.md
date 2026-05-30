@@ -1,6 +1,6 @@
 # Materialized Views
 
-> **Regular view:** A logical construct inside the database — it doesn't store any data. Every query against it re-executes the underlying SQL.
+> **Regular view:** A logical construct inside the database; it doesn't store any data. Every query against it re-executes the underlying SQL.
 >
 > **Materialized view:** A simple concept that helps improve querying performance when reading data from a database. A materialized view actually persists the data inside the database.
 
@@ -21,13 +21,13 @@ flowchart LR
 
 ---
 
-## Example — `EventStatistics`
+## Example: `EventStatistics`
 
-The `Attendance` module maintains an `event_statistics` table as a manually managed materialized view. It is written to by a set of Projections and read directly by query handlers — no joins, no aggregations at query time.
+The `Attendance` module maintains an `event_statistics` table as a manually managed materialized view. It is written to by a set of Projections and read directly by query handlers, with no joins and no aggregations at query time.
 
 | Event | Projection | Effect on `event_statistics` |
 |---|---|---|
-| `EventCreatedDomainEvent` | `EventCreatedDomainEventHandler` | `INSERT` — creates the row |
+| `EventCreatedDomainEvent` | `EventCreatedDomainEventHandler` | `INSERT` creates the row |
 | `TicketCreatedDomainEvent` | `TicketCreatedDomainEventHandler` | `UPDATE tickets_sold` |
 | `AttendeeCheckedInDomainEvent` | `AttendeeCheckedInDomainEventHandler` | `UPDATE attendees_checked_in` |
 
@@ -35,7 +35,7 @@ The `Attendance` module maintains an `event_statistics` table as a manually mana
 
 ## Where is this implemented in code?
 
-### 1. The Read Model — `EventStatistics`
+### 1. The Read Model: `EventStatistics`
 
 `src/Modules/Attendance/Evently.Modules.Attendance.Domain/Events/EventStatistics.cs`
 
@@ -55,11 +55,11 @@ public sealed class EventStatistics
 }
 ```
 
-This is a flat, denormalized read model. All the data a consumer needs is already pre-aggregated into a single row — no joins required at read time.
+This is a flat, denormalized read model. All the data a consumer needs is already pre-aggregated into a single row, with no joins required at read time.
 
 ---
 
-### 2. Projection — `EventCreatedDomainEventHandler`
+### 2. Projection: `EventCreatedDomainEventHandler`
 
 `src/Modules/Attendance/Evently.Modules.Attendance.Application/EventStatistics/Projections/EventCreatedDomainEventHandler.cs`
 
@@ -104,7 +104,7 @@ When an event is created, the Projection `INSERT`s a new row into `event_statist
 
 ---
 
-### 3. Projection — `TicketCreatedDomainEventHandler`
+### 3. Projection: `TicketCreatedDomainEventHandler`
 
 `src/Modules/Attendance/Evently.Modules.Attendance.Application/EventStatistics/Projections/TicketCreatedDomainEventHandler.cs`
 
@@ -137,7 +137,7 @@ Every time a ticket is sold, `tickets_sold` is recalculated from the source tabl
 
 ---
 
-### 4. Projection — `AttendeeCheckedInDomainEventHandler`
+### 4. Projection: `AttendeeCheckedInDomainEventHandler`
 
 `src/Modules/Attendance/Evently.Modules.Attendance.Application/EventStatistics/Projections/AttendeeCheckedInDomainEventHandler.cs`
 
@@ -172,7 +172,7 @@ When an attendee checks in, `attendees_checked_in` is recomputed by counting tic
 
 ---
 
-### 5. Reading the View — `GetEventStatisticsQueryHandler`
+### 5. Reading the View: `GetEventStatisticsQueryHandler`
 
 `src/Modules/Attendance/Evently.Modules.Attendance.Application/EventStatistics/GetEventStatistics/GetEventStatisticsQueryHandler.cs`
 
@@ -209,7 +209,7 @@ internal sealed class GetEventStatisticsQueryHandler(IDbConnectionFactory dbConn
 }
 ```
 
-The query is a straight `SELECT` against a single, pre-populated table. No aggregations, no joins — the Projections have already done the work.
+The query is a straight `SELECT` against a single, pre-populated table. No aggregations, no joins: the Projections have already done the work.
 
 ---
 

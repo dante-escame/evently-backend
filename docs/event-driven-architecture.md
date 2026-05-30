@@ -2,7 +2,7 @@
 
 > **Event:** An event is an immutable fact, something that has already happened in the past and cannot be changed.
 
-Event-driven is a concern about something being driven by business events. It's a reactive style of architecture — you react to events instead of explicitly telling the system what to do next.
+Event-driven is a concern about something being driven by business events. It's a reactive style of architecture: you react to events instead of explicitly telling the system what to do next.
 
 ```mermaid
 flowchart LR
@@ -22,7 +22,7 @@ Your architecture is event-driven if you're using at least one of these patterns
 
 ### Event Sourcing
 
-The main responsibility is to manage application state. The concept is based on persisting the individual events as the state of the system — a set of events applied one after the other that defines the current state.
+The main responsibility is to manage application state. The concept is based on persisting the individual events as the state of the system, a set of events applied one after the other that defines the current state.
 
 ---
 
