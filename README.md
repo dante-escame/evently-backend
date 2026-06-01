@@ -34,12 +34,16 @@ A modular monolith backend for event management, built to explore and apply patt
 
 ## Stack
 - .NET 8 / ASP.NET Core
-- PostgreSQL with EF Core
+- PostgreSQL with EF Core + Dapper (read queries)
 - Redis
 - Keycloak (identity & authorization)
 - MassTransit (messaging)
+- MediatR (CQRS)
+- Quartz.NET (background job scheduling)
+- FluentValidation (input validation)
 - Serilog + Seq (structured logging)
 - Docker + Docker Compose
+- xUnit + Bogus + FluentAssertions + Testcontainers (testing)
 
 ## Architecture
 Single deployable unit composed of four self-contained modules, each structured in Domain, Application, Infrastructure, and Presentation layers:
