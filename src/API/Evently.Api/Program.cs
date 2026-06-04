@@ -36,19 +36,19 @@ string databaseConnectionString = builder.Configuration.GetConnectionStringOrThr
 string redisConnectionString = builder.Configuration.GetConnectionStringOrThrow("Cache");
 
 builder.Services.AddInfrastructure(
+    DiagnosticsConfig.ServiceName,
     [
+        EventsModule.ConfigureConsumers(redisConnectionString),
         TicketingModule.ConfigureConsumers,
         AttendanceModule.ConfigureConsumers
     ],
     databaseConnectionString,
     redisConnectionString);
 
-Uri keyCloakHealthUrl = builder.Configuration.GetKeyCloakHealthUrl();
-
 builder.Services.AddHealthChecks()
     .AddNpgSql(databaseConnectionString)
     .AddRedis(redisConnectionString)
-    .AddKeyCloak(keyCloakHealthUrl);
+    .AddKeyCloak(builder.Configuration.GetKeyCloakHealthUrl());
 
 builder.Configuration.AddModuleConfiguration(["users", "events", "ticketing", "attendance"]);
 
@@ -74,6 +74,8 @@ app.MapHealthChecks("health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+app.UseLogContext();
 
 app.UseSerilogRequestLogging();
 

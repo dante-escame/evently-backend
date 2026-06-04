@@ -1,5 +1,5 @@
-﻿using Evently.Modules.Attendance.ArchitectureTests.Abstractions;
-using MassTransit;
+﻿using Evently.Common.Application.EventBus;
+using Evently.Modules.Attendance.ArchitectureTests.Abstractions;
 using NetArchTest.Rules;
 
 namespace Evently.Modules.Attendance.ArchitectureTests.Presentation;
@@ -7,11 +7,27 @@ namespace Evently.Modules.Attendance.ArchitectureTests.Presentation;
 public class PresentationTests : BaseTest
 {
     [Fact]
-    public void IntegrationEventConsumer_Should_BeSealed()
+    public void IntegrationEventHandler_Should_NotBePublic()
     {
         Types.InAssembly(PresentationAssembly)
             .That()
-            .ImplementInterface(typeof(IConsumer<>))
+            .ImplementInterface(typeof(IIntegrationEventHandler<>))
+            .Or()
+            .Inherit(typeof(IntegrationEventHandler<>))
+            .Should()
+            .NotBePublic()
+            .GetResult()
+            .ShouldBeSuccessful();
+    }
+
+    [Fact]
+    public void IntegrationEventHandler_Should_BeSealed()
+    {
+        Types.InAssembly(PresentationAssembly)
+            .That()
+            .ImplementInterface(typeof(IIntegrationEventHandler<>))
+            .Or()
+            .Inherit(typeof(IntegrationEventHandler<>))
             .Should()
             .BeSealed()
             .GetResult()
@@ -19,13 +35,15 @@ public class PresentationTests : BaseTest
     }
 
     [Fact]
-    public void IntegrationEventConsumer_ShouldHave_NameEndingWith_IntegrationEventConsumer()
+    public void IntegrationEventHandler_ShouldHave_NameEndingWith_DomainEventHandler()
     {
         Types.InAssembly(PresentationAssembly)
             .That()
-            .ImplementInterface(typeof(IConsumer<>))
+            .ImplementInterface(typeof(IIntegrationEventHandler<>))
+            .Or()
+            .Inherit(typeof(IntegrationEventHandler<>))
             .Should()
-            .HaveNameEndingWith("IntegrationEventConsumer")
+            .HaveNameEndingWith("IntegrationEventHandler")
             .GetResult()
             .ShouldBeSuccessful();
     }
