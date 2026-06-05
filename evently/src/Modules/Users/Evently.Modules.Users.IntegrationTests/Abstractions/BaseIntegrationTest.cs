@@ -4,28 +4,42 @@ using Bogus;
 using Evently.Modules.Users.Infrastructure.Database;
 using Evently.Modules.Users.Infrastructure.Identity;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Evently.Modules.Users.IntegrationTests.Abstractions;
 
 [Collection(nameof(IntegrationTestCollection))]
-public class BaseIntegrationTest : IDisposable
+public abstract class BaseIntegrationTest : IDisposable
 {
     protected static readonly Faker Faker = new();
     private readonly IServiceScope _scope;
     protected readonly ISender Sender;
+    protected readonly UsersDbContext DbContext;
     protected readonly HttpClient HttpClient;
     private readonly KeyCloakOptions _options;
-    protected readonly UsersDbContext DbContext;
 
     protected BaseIntegrationTest(IntegrationTestWebAppFactory factory)
     {
         _scope = factory.Services.CreateScope();
-        Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
         HttpClient = factory.CreateClient();
-        _options = _scope.ServiceProvider.GetRequiredService<IOptions<KeyCloakOptions>>().Value;
+        Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
         DbContext = _scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+        _options = factory.Services.GetRequiredService<IOptions<KeyCloakOptions>>().Value;
+    }
+
+    protected async Task CleanDatabaseAsync()
+    {
+        await DbContext.Database.ExecuteSqlRawAsync(
+            """
+            DELETE FROM users.inbox_message_consumers;
+            DELETE FROM users.inbox_messages;
+            DELETE FROM users.outbox_message_consumers;
+            DELETE FROM users.outbox_messages;
+            DELETE FROM users.users;
+            DELETE FROM users.user_roles;
+            """);
     }
 
     protected async Task<string> GetAccessTokenAsync(string email, string password)
