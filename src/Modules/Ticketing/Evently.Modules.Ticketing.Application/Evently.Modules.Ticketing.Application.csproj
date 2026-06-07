@@ -6,8 +6,4 @@
     <ProjectReference Include="..\Evently.Modules.Ticketing.IntegrationEvents\Evently.Modules.Ticketing.IntegrationEvents.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Customers\UpdateCustomer\" />
-  </ItemGroup>
-
 </Project>
