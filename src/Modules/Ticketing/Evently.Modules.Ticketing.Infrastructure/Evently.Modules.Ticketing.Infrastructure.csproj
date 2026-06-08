@@ -7,4 +7,8 @@
     <ProjectReference Include="..\Evently.Modules.Ticketing.Presentation\Evently.Modules.Ticketing.Presentation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Authorization\" />
+  </ItemGroup>
+
 </Project>

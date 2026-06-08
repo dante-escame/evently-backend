@@ -33,9 +33,7 @@ namespace Evently.Modules.Ticketing.Infrastructure;
 
 public static class TicketingModule
 {
-    public static IServiceCollection AddTicketingModule(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddTicketingModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDomainEventHandlers();
 

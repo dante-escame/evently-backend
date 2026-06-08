@@ -1,4 +1,4 @@
-using Bogus;
+﻿using Bogus;
 using Evently.Common.Domain;
 
 namespace Evently.Modules.Events.UnitTests.Abstractions;
