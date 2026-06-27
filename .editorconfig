@@ -387,3 +387,12 @@ dotnet_diagnostic.S4136.severity = none
 
 # S6605: Collection-specific "Exists" method should be used instead of the "Any" extension
 dotnet_diagnostic.S6605.severity = none
+
+# Test projects (*.UnitTests, *.IntegrationTests, *.ArchitectureTests, *.UnitTest)
+# do not expose a public API surface, and test frameworks (xUnit) discover public
+# test classes via reflection. CA1515 (make public types internal) is noise here.
+[**/*Tests/**.cs]
+dotnet_diagnostic.CA1515.severity = none
+
+[**/*Test/**.cs]
+dotnet_diagnostic.CA1515.severity = none

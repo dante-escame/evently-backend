@@ -91,4 +91,6 @@ app.MapEndpoints();
 
 app.Run();
 
+#pragma warning disable CA1515 // Program must be public for WebApplicationFactory<Program> in integration tests
 public partial class Program;
+#pragma warning restore CA1515

@@ -1,6 +1,6 @@
 ﻿namespace Evently.Api.OpenTelemetry;
 
-public static class DiagnosticsConfig
+internal static class DiagnosticsConfig
 {
     public const string ServiceName = "Evently.Api";
 }

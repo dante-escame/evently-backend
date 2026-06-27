@@ -32,7 +32,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(IDateTimeProvider));
+            services.RemoveAll<IDateTimeProvider>();
             
             DateTimeProviderMock.UtcNow.Returns(_ => DateTime.UtcNow);
             services.AddSingleton(DateTimeProviderMock);
